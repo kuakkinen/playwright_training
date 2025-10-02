@@ -1,22 +1,27 @@
-import {test, expect} from '@playwright/test';
+import {test, expect, BrowserContext} from '@playwright/test';
 
-test('eka testi', async ({page}) => {
+let context: BrowserContext;
+let page: any;
+
+test.beforeAll( async ({browser}) => {
+  context = await browser.newContext();
+  await context.tracing.start({ screenshots: true, snapshots: true });
+  page = await context.newPage();
+});
+
+test.afterAll( async () => {
+  await context.tracing.stop({ path: 'trace.zip' });
+});
+
+
+test('eka testi', async ({}) => {
   await page.goto('https://playwright.dev/');
   await expect(page).toHaveTitle(/Playwright/);
 });
 
-test('nauhoitettu', async ({ page }) => {
+test('nauhoitettu', async ({}) => {
   await page.goto('https://www.google.com/?gws_rd=ssl');
-  await page.getByRole('button', { name: 'Hylkää kaikki' }).click();
+  await page.getByRole('button', { name: 'Hyväksy kaikki' }).click();
   await page.getByRole('combobox', { name: 'Hae' }).click();
-  await page.getByRole('combobox', { name: 'Hae' }).fill('koripallo');
-  await page.locator('iframe[name="a-lbhcnim95vvs"]').contentFrame().getByRole('checkbox', { name: 'I\'m not a robot' }).click();
-  await page.locator('iframe[name="c-lbhcnim95vvs"]').contentFrame().locator('[id="2"]').click();
-  await page.locator('iframe[name="c-lbhcnim95vvs"]').contentFrame().locator('[id="5"]').click();
-  await page.locator('iframe[name="c-lbhcnim95vvs"]').contentFrame().locator('[id="3"]').click();
-  await page.locator('iframe[name="c-lbhcnim95vvs"]').contentFrame().getByRole('button', { name: 'Verify' }).click();
-  await page.getByRole('link', { name: 'Koripallo Wikipedia https://' }).click();
-  await page.getByText('Koripallo on urheilulaji ja p').click();
-  await page.getByText('Koripallokentän alusta on').click();
-  await page.getByText('Kentässä on viivoilla').click();
+  await page.getByRole('combobox', { name: 'Hae' }).fill('playwright');
 });
